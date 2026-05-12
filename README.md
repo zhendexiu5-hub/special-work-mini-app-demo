@@ -4,13 +4,19 @@
 
 ## 试用
 
-当前静态服务地址：
+Cloudflare Pages 公开地址：
 
 ```text
-http://localhost:4301
+https://special-work-mini-app-demo.pages.dev
 ```
 
-也可以直接打开 `index.html`。
+GitHub Pages 备用地址：
+
+```text
+https://zhendexiu5-hub.github.io/special-work-mini-app-demo/
+```
+
+也可以直接打开 `index.html` 或 `special-work-mini-app-demo-sendable.html`。
 
 ## 覆盖流程
 
