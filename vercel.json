@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/special-work-mini-app-demo-sendable.html"
+    }
+  ]
+}

@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>特种作业 / 二装审批 Mini App Demo</title>
+    <style>
+:root {
+  --bg: #eef2f6;
+  --ink: #182235;
+  --muted: #6a7384;
+  --line: #e4e8ef;
+  --surface: #ffffff;
+  --soft: #f7f9fc;
+  --brand: #12695f;
+  --brand-2: #0f8a78;
+  --brand-soft: #e4f7f2;
+  --warn: #b45309;
+  --danger: #b42318;
+  --blue: #1d4ed8;
+  font-family: Inter, "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(15, 138, 120, 0.16), transparent 30%),
+    linear-gradient(140deg, #f7fafc 0%, #e8edf3 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.demo-stage {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top left, rgba(15, 138, 120, 0.14), transparent 28%),
+    linear-gradient(140deg, #f7fafc 0%, #e8edf3 100%);
+}
+
+.phone {
+  position: relative;
+  width: min(430px, 100%);
+  min-height: 100vh;
+  background: #f4f7fb;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+}
+
+.phone-status {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(env(safe-area-inset-top), 0px) 20px 0;
+  background: #f4f7fb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mini-page {
+  height: calc(100vh - 100px);
+  overflow: auto;
+  padding: 0 16px 18px;
+}
+
+.hidden {
+  display: none;
+}
+
+.hero {
+  margin: 0 -16px 14px;
+  padding: 20px 16px 16px;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(18, 105, 95, 0.98), rgba(22, 36, 58, 0.98)),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.2), transparent 26%),
+    radial-gradient(circle at 88% 8%, rgba(15, 138, 120, 0.36), transparent 24%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 14px);
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.hero h1,
+.page-title h1 {
+  font-size: 24px;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.hero p,
+.page-title p {
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.mini-icon-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.notice-card,
+.ticket-card,
+.supplement-card,
+.permit-card,
+.result-card,
+.block {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.notice-card {
+  margin-top: 18px;
+  padding: 14px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: none;
+}
+
+.notice-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.notice-card p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.block {
+  margin-top: 12px;
+  padding: 14px;
+}
+
+.block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.block-head h2 {
+  font-size: 17px;
+}
+
+.block-head span,
+.material-tag,
+.timeline-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.job-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.job-card {
+  min-height: 96px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbfcfe;
+  text-align: left;
+  color: var(--ink);
+}
+
+.job-card.active {
+  border-color: var(--brand-2);
+  background: var(--brand-soft);
+}
+
+.job-card strong {
+  font-size: 15px;
+}
+
+.job-card span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.form-list,
+.material-list,
+.timeline {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+
+textarea {
+  resize: none;
+  line-height: 1.55;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--brand-2);
+  box-shadow: 0 0 0 3px rgba(15, 138, 120, 0.12);
+}
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.risk-chip {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.risk-chip.active {
+  border-color: var(--brand-2);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.risk-text {
+  margin-top: 4px;
+}
+
+.material-item {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbfcfe;
+}
+
+.material-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.material-line strong {
+  font-size: 14px;
+}
+
+.material-item p,
+.timeline-item p,
+.result-card p,
+.supplement-card p,
+.ticket-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.material-tag.required {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+.upload-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.upload-state {
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mini-link-button {
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.primary-action,
+.secondary-action {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 900;
+}
+
+.primary-action {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #fff;
+}
+
+.secondary-action {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.page-title {
+  margin: 8px -16px 14px;
+  padding: 20px 16px;
+  color: #fff;
+  background: linear-gradient(135deg, #132235, #12695f);
+}
+
+.ticket-card,
+.supplement-card,
+.permit-card,
+.result-card {
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.ticket-card span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ticket-card strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 24px;
+}
+
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+.timeline-item.done .timeline-dot {
+  background: var(--brand-2);
+}
+
+.timeline-item.current {
+  border-color: var(--brand-2);
+  background: var(--brand-soft);
+}
+
+.timeline-item.current .timeline-dot {
+  background: var(--warn);
+}
+
+.timeline-item strong {
+  display: block;
+  font-size: 14px;
+}
+
+.permit-card {
+  color: #fff;
+  background:
+    linear-gradient(145deg, rgba(18, 105, 95, 0.96), rgba(14, 31, 52, 0.98)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 12px);
+}
+
+.permit-card span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.permit-card h2 {
+  margin-top: 10px;
+  font-size: 30px;
+}
+
+.permit-card p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.permit-code {
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.42);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+dt {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 900;
+}
+
+.tabbar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 50;
+  width: min(430px, 100%);
+  height: 66px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.tab {
+  border: 0;
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tab.active {
+  color: var(--brand);
+}
+
+.demo-panel {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .demo-stage {
+    display: block;
+    padding: 0;
+  }
+
+  .phone {
+    width: 100%;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .tabbar {
+    width: 100%;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <main class="demo-stage">
+      <section class="phone" aria-label="特种作业二装审批小程序前端演示">
+        <header class="phone-status">
+          <span>9:41</span>
+          <span>5G 100%</span>
+        </header>
+
+        <section class="mini-page" data-page="apply">
+          <div class="hero">
+            <div class="hero-top">
+              <div>
+                <h1>施工 / 特种作业申请</h1>
+                <p>二装、动火、动土、幕墙清洗统一入口</p>
+              </div>
+              <button class="mini-icon-button" id="resetDemo" type="button" aria-label="重置">↻</button>
+            </div>
+            <div class="notice-card">
+              <strong id="noticeTitle">二装入场申办须知</strong>
+              <p id="noticeBody">需提交施工合同、资质文件、成套图纸、人员资料和专项申请资料，资料齐全后启动审图与安全交底。</p>
+            </div>
+          </div>
+
+          <section class="block">
+            <div class="block-head">
+              <h2>选择作业类型</h2>
+              <span id="riskBadge">中风险</span>
+            </div>
+            <div class="job-grid" id="jobGrid"></div>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <h2>申请信息</h2>
+              <span>必填</span>
+            </div>
+            <div class="form-list">
+              <label>
+                项目名称
+                <select id="projectName"></select>
+              </label>
+              <label>
+                楼栋 / 房号
+                <input id="roomText" value="A座 1208" />
+              </label>
+              <label>
+                申请单位
+                <input id="applicantOrg" value="澄境装饰工程" />
+              </label>
+              <label>
+                联系人 / 电话
+                <input id="contactText" value="林清越 13800002001" />
+              </label>
+              <label>
+                现场负责人
+                <input id="managerText" value="何安 13800002002" />
+              </label>
+              <label>
+                作业内容说明
+                <textarea id="jobDesc" rows="3">商铺二装进场、隔断调整、临时用电和成品保护。</textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <h2>风险与专项</h2>
+              <span>按 SOP 触发材料</span>
+            </div>
+            <div class="risk-grid" id="riskGrid"></div>
+            <label class="risk-text">
+              风险说明
+              <textarea id="riskRemark" rows="3">需完成审图、临时用电确认、安全技术交底后方可进场。</textarea>
+            </label>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <h2>材料清单</h2>
+              <span id="materialCount">0/0</span>
+            </div>
+            <div class="material-list" id="materialList"></div>
+          </section>
+
+          <button class="primary-action" id="submitApply" type="button">提交申请</button>
+        </section>
+
+        <section class="mini-page hidden" data-page="progress">
+          <div class="page-title">
+            <h1>进度查询</h1>
+            <p>提交后按审批节点展示当前状态、补件原因和结果单。</p>
+          </div>
+          <div class="ticket-card">
+            <span>申请单号</span>
+            <strong id="applyNo">SQ202604130001</strong>
+            <p id="verifyText">校验码 2001 · 当前正在安全监察审核</p>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <div class="result-card">
+            <strong id="resultTitle">待项目经理终审</strong>
+            <p id="resultCopy">审批通过后可查看结果单、装修许可证或特种作业放行许可。</p>
+            <button class="secondary-action" id="advanceStatus" type="button">模拟推进下一节点</button>
+          </div>
+        </section>
+
+        <section class="mini-page hidden" data-page="supplement">
+          <div class="page-title">
+            <h1>补件 / 押金</h1>
+            <p>用于演示退回补件、押金凭证和材料版本更新。</p>
+          </div>
+          <div class="supplement-card">
+            <strong>当前补件要求</strong>
+            <p id="supplementReason">请补充施工图纸中临时用电回路说明，并上传押金缴纳凭证。</p>
+          </div>
+          <div class="material-list" id="supplementList"></div>
+          <button class="primary-action" id="submitSupplement" type="button">提交补件</button>
+        </section>
+
+        <section class="mini-page hidden" data-page="result">
+          <div class="page-title">
+            <h1>结果单</h1>
+            <p>审批完成后的放行凭证展示，不代表真实 PDF 下载。</p>
+          </div>
+          <div class="permit-card">
+            <span>施工放行许可</span>
+            <h2 id="permitJob">二装入场</h2>
+            <p id="permitUnit">创智云城一期 · A座 1208</p>
+            <div class="permit-code">ZYPT-2026-0413-0001</div>
+            <dl>
+              <div><dt>风险等级</dt><dd id="permitRisk">中风险</dd></div>
+              <div><dt>有效期</dt><dd>2026-04-14 至 2026-04-15</dd></div>
+              <div><dt>放行条件</dt><dd id="permitGate">安全交底、人员出入证、装修许可证</dd></div>
+            </dl>
+          </div>
+          <button class="secondary-action" type="button" data-tab-target="apply">返回继续申请</button>
+        </section>
+
+        <nav class="tabbar" aria-label="小程序底部导航">
+          <button class="tab active" data-tab-target="apply" type="button">申请</button>
+          <button class="tab" data-tab-target="progress" type="button">进度</button>
+          <button class="tab" data-tab-target="supplement" type="button">补件</button>
+          <button class="tab" data-tab-target="result" type="button">结果</button>
+        </nav>
+      </section>
+    </main>
+
+    <script>
+const jobTypes = {
+  renovation: {
+    name: "二装入场",
+    short: "二装",
+    risk: "medium",
+    noticeTitle: "二装入场申办须知",
+    noticeBody: "需提交施工合同、资质文件、成套图纸、人员资料和专项申请资料，资料齐全后启动审图与安全交底。",
+    desc: "商铺二装进场、隔断调整、临时用电和成品保护。",
+    remark: "需完成审图、临时用电确认、安全技术交底后方可进场。",
+    defaultRisks: ["is_power_off"],
+    gate: "安全交底、人员出入证、装修许可证"
+  },
+  wood_cleaning: {
+    name: "幕墙清洗",
+    short: "清洗",
+    risk: "high",
+    noticeTitle: "幕墙清洗作业须知",
+    noticeBody: "按高空零星作业管理，需提交作业方案、人员特种作业证、保险与安全责任资料，并明确天气窗口、警戒范围与坠落防护措施。",
+    desc: "幕墙立面清洗与高空绳索作业。",
+    remark: "涉及高空清洗，需确认吊点、天气窗口、保险和坠物警戒。",
+    defaultRisks: ["is_height_work"],
+    gate: "高空作业人员校验、高空作业放行许可"
+  },
+  excavation: {
+    name: "动土",
+    short: "动土",
+    risk: "high",
+    noticeTitle: "动土作业须知",
+    noticeBody: "需提交动土范围说明、安全专项方案，说明是否断电、是否夜间施工及现场负责人。",
+    desc: "局部开挖检修并恢复地面。",
+    remark: "开挖前需确认地下管线、线缆和周边结构风险。",
+    defaultRisks: ["is_excavation"],
+    gate: "地下管线确认、安全专项方案、现场围挡"
+  },
+  hot_work: {
+    name: "动火",
+    short: "动火",
+    risk: "high",
+    noticeTitle: "动火作业须知",
+    noticeBody: "必须提交消防审批资料、人员从业资格证，并明确现场消防器材和风险控制措施。",
+    desc: "焊接支架与切割旧管线。",
+    remark: "现场需配灭火器、专职监护，动火后持续留观。",
+    defaultRisks: ["is_hot_work", "is_power_off"],
+    gate: "消防审批、动火监护、灭火器材确认"
+  }
+};
+
+const projects = ["创智云城一期", "创智云城二期", "创智总部", "云智科园", "尚智科园", "乐府广场", "前海交易广场T1"];
+
+const risks = [
+  { code: "is_hot_work", label: "动火专项" },
+  { code: "is_excavation", label: "动土专项" },
+  { code: "is_power_off", label: "临时用电 / 断电" },
+  { code: "is_height_work", label: "高空作业" },
+  { code: "is_night_work", label: "夜间施工" }
+];
+
+const materialRules = [
+  { code: "file_drawing", label: "施工图纸", desc: "二装需平面图、吊顶图、电力图；幕墙清洗需作业立面或吊点示意图。", mode: "conditional", jobs: ["renovation", "wood_cleaning"] },
+  { code: "file_license", label: "营业执照", desc: "施工单位营业执照。", mode: "always" },
+  { code: "file_qualification", label: "施工资质", desc: "施工单位资质证书。", mode: "always" },
+  { code: "file_worker_cert", label: "人员从业资格证", desc: "身份证、特种作业证、施工人员出入证申请资料。", mode: "always" },
+  { code: "file_insurance", label: "保险保单", desc: "高空或幕墙清洗作业需上传保险与风险责任资料。", mode: "risk", risks: ["is_height_work"], jobs: ["wood_cleaning"] },
+  { code: "file_fire_approval", label: "消防审批资料", desc: "动火类作业必传。", mode: "conditional", jobs: ["hot_work"] },
+  { code: "file_safety_plan", label: "安全专项方案", desc: "动土、高空、幕墙清洗或其他高风险作业必传。", mode: "risk", risks: ["is_excavation", "is_height_work"], jobs: ["excavation", "wood_cleaning"] },
+  { code: "file_authorization", label: "授权委托书", desc: "装修负责人授权委托书、承诺书等。", mode: "conditional", jobs: ["renovation"] },
+  { code: "file_deposit_receipt", label: "押金缴纳凭证", desc: "银行回单、转账截图或收据照片。", mode: "optional" },
+  { code: "file_other", label: "其他附件", desc: "现场照片、补充说明或备用附件。", mode: "optional" }
+];
+
+const timelineNodes = ["提交申请", "初审分发", "楼栋管家审核", "部门经理审核", "安全监察审核", "项目经理终审", "结果通知", "资料归档"];
+
+const defaultState = {
+  page: "apply",
+  jobType: "renovation",
+  selectedRisks: ["is_power_off"],
+  uploaded: ["file_license", "file_qualification", "file_worker_cert", "file_authorization"],
+  statusIndex: 2,
+  applyNo: "SQ202604130001",
+  submitted: false,
+  supplementDone: false
+};
+
+const storageKey = "special-work-mini-demo-v1";
+let state = loadState();
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(storageKey)) || structuredClone(defaultState);
+  } catch {
+    return structuredClone(defaultState);
+  }
+}
+
+function saveState() {
+  localStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+function activeJob() {
+  return jobTypes[state.jobType];
+}
+
+function riskLevel() {
+  if (state.jobType === "hot_work" || state.jobType === "excavation" || state.selectedRisks.includes("is_hot_work") || state.selectedRisks.includes("is_excavation") || state.selectedRisks.includes("is_height_work")) {
+    return "高风险";
+  }
+  return state.selectedRisks.length ? "中风险" : "低风险";
+}
+
+function requiredMaterials() {
+  return materialRules
+    .map((item) => {
+      const jobMatched = item.jobs?.includes(state.jobType);
+      const riskMatched = item.risks?.some((risk) => state.selectedRisks.includes(risk));
+      const required = item.mode === "always" || item.mode === "conditional" && jobMatched || item.mode === "risk" && (jobMatched || riskMatched);
+      const visible = required || item.mode === "optional" || jobMatched || riskMatched;
+      return { ...item, required, visible };
+    })
+    .filter((item) => item.visible);
+}
+
+function renderJobs() {
+  const grid = document.querySelector("#jobGrid");
+  grid.innerHTML = Object.entries(jobTypes)
+    .map(([code, job]) => `
+      <button class="job-card ${state.jobType === code ? "active" : ""}" data-job="${code}" type="button">
+        <strong>${job.name}</strong>
+        <span>${job.noticeBody}</span>
+      </button>
+    `)
+    .join("");
+
+  grid.querySelectorAll("[data-job]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.jobType = button.dataset.job;
+      state.selectedRisks = [...jobTypes[state.jobType].defaultRisks];
+      state.uploaded = ["file_license", "file_qualification", "file_worker_cert"];
+      document.querySelector("#jobDesc").value = activeJob().desc;
+      document.querySelector("#riskRemark").value = activeJob().remark;
+      saveState();
+      render();
+    });
+  });
+}
+
+function renderProjects() {
+  const select = document.querySelector("#projectName");
+  select.innerHTML = projects.map((project) => `<option>${project}</option>`).join("");
+}
+
+function renderNotice() {
+  const job = activeJob();
+  document.querySelector("#noticeTitle").textContent = job.noticeTitle;
+  document.querySelector("#noticeBody").textContent = job.noticeBody;
+  document.querySelector("#riskBadge").textContent = riskLevel();
+  document.querySelector("#permitJob").textContent = job.name;
+  document.querySelector("#permitRisk").textContent = riskLevel();
+  document.querySelector("#permitGate").textContent = job.gate;
+  document.querySelector("#permitUnit").textContent = `${document.querySelector("#projectName")?.value || projects[0]} · ${document.querySelector("#roomText")?.value || "A座 1208"}`;
+}
+
+function renderRisks() {
+  const grid = document.querySelector("#riskGrid");
+  grid.innerHTML = risks.map((risk) => `<button class="risk-chip ${state.selectedRisks.includes(risk.code) ? "active" : ""}" data-risk="${risk.code}" type="button">${risk.label}</button>`).join("");
+  grid.querySelectorAll("[data-risk]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const code = button.dataset.risk;
+      state.selectedRisks = state.selectedRisks.includes(code)
+        ? state.selectedRisks.filter((item) => item !== code)
+        : [...state.selectedRisks, code];
+      saveState();
+      render();
+    });
+  });
+}
+
+function renderMaterials() {
+  const materials = requiredMaterials();
+  const required = materials.filter((item) => item.required);
+  const uploadedRequired = required.filter((item) => state.uploaded.includes(item.code));
+  document.querySelector("#materialCount").textContent = `${uploadedRequired.length}/${required.length}`;
+
+  const html = materials.map((item) => `
+    <article class="material-item">
+      <div class="material-line">
+        <strong>${item.label}</strong>
+        <span class="material-tag ${item.required ? "required" : ""}">${item.required ? "必传" : "选传"}</span>
+      </div>
+      <p>${item.desc}</p>
+      <div class="upload-row">
+        <span class="upload-state">${state.uploaded.includes(item.code) ? "已上传" : "未上传"}</span>
+        <button class="mini-link-button" data-upload="${item.code}" type="button">${state.uploaded.includes(item.code) ? "重新选择" : "模拟上传"}</button>
+      </div>
+    </article>
+  `).join("");
+
+  document.querySelector("#materialList").innerHTML = html;
+  document.querySelector("#supplementList").innerHTML = materials
+    .filter((item) => item.required || ["file_deposit_receipt", "file_other"].includes(item.code))
+    .map((item) => `
+      <article class="material-item">
+        <div class="material-line">
+          <strong>${item.label}</strong>
+          <span class="material-tag ${state.uploaded.includes(item.code) ? "" : "required"}">${state.uploaded.includes(item.code) ? "已补齐" : "待补"}</span>
+        </div>
+        <p>${item.desc}</p>
+        <div class="upload-row">
+          <span class="upload-state">${state.uploaded.includes(item.code) ? "材料版本 v2" : "等待补件"}</span>
+          <button class="mini-link-button" data-upload="${item.code}" type="button">模拟上传</button>
+        </div>
+      </article>
+    `)
+    .join("");
+
+  document.querySelectorAll("[data-upload]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!state.uploaded.includes(button.dataset.upload)) {
+        state.uploaded.push(button.dataset.upload);
+      }
+      saveState();
+      render();
+    });
+  });
+}
+
+function renderTimeline() {
+  const timeline = document.querySelector("#timeline");
+  timeline.innerHTML = timelineNodes.map((node, index) => {
+    const done = index < state.statusIndex;
+    const current = index === state.statusIndex;
+    const stateText = done ? "已完成" : current ? "处理中" : "待处理";
+    return `
+      <article class="timeline-item ${done ? "done" : ""} ${current ? "current" : ""}">
+        <span class="timeline-dot"></span>
+        <div>
+          <div class="material-line">
+            <strong>${node}</strong>
+            <span class="timeline-state">${stateText}</span>
+          </div>
+          <p>${timelineCopy(node, index)}</p>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const currentNode = timelineNodes[state.statusIndex] || "资料归档";
+  document.querySelector("#verifyText").textContent = `校验码 2001 · 当前正在${currentNode}`;
+  document.querySelector("#resultTitle").textContent = state.statusIndex >= 6 ? "审批已通过，可查看结果单" : `待${currentNode}`;
+  document.querySelector("#resultCopy").textContent = state.statusIndex >= 6 ? "结果单已生成，可在底部结果页查看放行条件。" : "审批通过后可查看结果单、装修许可证或特种作业放行许可。";
+}
+
+function timelineCopy(node, index) {
+  const copy = {
+    提交申请: "申请人提交作业信息、风险说明和材料清单。",
+    初审分发: "系统按项目和楼栋分派到楼栋管家。",
+    楼栋管家审核: "核对资料完整性，缺件时退回补件。",
+    部门经理审核: "确认业务合规、工期和现场影响。",
+    安全监察审核: "重点核验动火、动土、高空、夜间施工等风险措施。",
+    项目经理终审: "确认是否具备施工放行条件。",
+    结果通知: "生成结果单、许可证或特种作业放行许可。",
+    资料归档: "审批链、材料版本和结果单归档。"
+  };
+  if (index === state.statusIndex && index === 2 && !state.supplementDone) {
+    return "当前演示可进入补件页，补齐图纸、押金或专项方案后继续推进。";
+  }
+  return copy[node];
+}
+
+function switchPage(page) {
+  state.page = page;
+  saveState();
+  document.querySelectorAll(".mini-page").forEach((node) => node.classList.toggle("hidden", node.dataset.page !== page));
+  document.querySelectorAll(".tab").forEach((node) => node.classList.toggle("active", node.dataset.tabTarget === page));
+}
+
+function bindStaticEvents() {
+  document.querySelectorAll("[data-tab-target]").forEach((button) => {
+    button.addEventListener("click", () => switchPage(button.dataset.tabTarget));
+  });
+
+  document.querySelector("#submitApply").addEventListener("click", () => {
+    const missing = requiredMaterials().filter((item) => item.required && !state.uploaded.includes(item.code));
+    if (missing.length) {
+      alert(`请先上传：${missing.map((item) => item.label).join("、")}`);
+      return;
+    }
+    state.submitted = true;
+    state.statusIndex = Math.max(state.statusIndex, 2);
+    state.applyNo = `SQ${new Date().toISOString().slice(0, 10).replaceAll("-", "")}0001`;
+    document.querySelector("#applyNo").textContent = state.applyNo;
+    saveState();
+    render();
+    switchPage("progress");
+  });
+
+  document.querySelector("#advanceStatus").addEventListener("click", () => {
+    state.statusIndex = Math.min(state.statusIndex + 1, timelineNodes.length - 1);
+    saveState();
+    render();
+    if (state.statusIndex >= 6) {
+      switchPage("result");
+    }
+  });
+
+  document.querySelector("#submitSupplement").addEventListener("click", () => {
+    state.supplementDone = true;
+    ["file_drawing", "file_deposit_receipt", "file_safety_plan"].forEach((code) => {
+      if (!state.uploaded.includes(code)) state.uploaded.push(code);
+    });
+    state.statusIndex = Math.max(state.statusIndex, 3);
+    saveState();
+    render();
+    switchPage("progress");
+  });
+
+  document.querySelector("#resetDemo").addEventListener("click", () => {
+    state = structuredClone(defaultState);
+    localStorage.removeItem(storageKey);
+    document.querySelector("#jobDesc").value = activeJob().desc;
+    document.querySelector("#riskRemark").value = activeJob().remark;
+    render();
+    switchPage("apply");
+  });
+
+  ["projectName", "roomText"].forEach((id) => {
+    document.querySelector(`#${id}`).addEventListener("input", renderNotice);
+    document.querySelector(`#${id}`).addEventListener("change", renderNotice);
+  });
+}
+
+function render() {
+  renderJobs();
+  renderNotice();
+  renderRisks();
+  renderMaterials();
+  renderTimeline();
+}
+
+renderProjects();
+bindStaticEvents();
+render();
+switchPage(state.page);
+
+    </script>
+  </body>
+</html>
+
